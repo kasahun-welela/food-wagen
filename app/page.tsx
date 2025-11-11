@@ -56,6 +56,7 @@ export default function Home() {
                       rating={food.rating}
                       status={food.status}
                       logo={food.logo}
+                      id={food.id}
                     />
                   ))}
                 </div>

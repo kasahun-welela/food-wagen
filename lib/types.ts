@@ -1,6 +1,7 @@
 export type FoodStatus = "open" | "closed"
 
 export type FoodCardProps = {
+  id?: string;
   imageUrl: string
   price: string
   name: string
@@ -28,3 +29,9 @@ export interface Restaurant {
     isOpen: boolean;
     onClose: () => void;
   }
+  export interface DeleteModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    onConfirm: () => void;
+  }
+  

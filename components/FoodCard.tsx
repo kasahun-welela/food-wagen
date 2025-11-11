@@ -11,6 +11,9 @@ import {
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import { FoodCardProps } from "@/lib/types";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
+import { deleteFood } from "@/lib/api";
+import DeleteModal from "./DeleteModal";
 
 function FoodCard({
   imageUrl,
@@ -19,8 +22,33 @@ function FoodCard({
   rating,
   status,
   logo,
+  id,
 }: FoodCardProps) {
   const [showMenu, setShowMenu] = useState(false);
+  const queryClient = useQueryClient();
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => deleteFood(id),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["foods"] }),
+  });
+
+  // const handleDelete = async (id: string) => {
+  //   setShowMenu(false);
+  //   if (!confirm("Are you sure you want to delete this food?")) return;
+  //   await deleteMutation.mutateAsync(id);
+  // };
+  const handleDelete = async (id: string) => {
+    setShowMenu(false);
+    setShowDeleteModal(true);
+
+    // The actual delete happens in the modal’s confirm button
+  };
+
+  const confirmDelete = async (id: string) => {
+    await deleteMutation.mutateAsync(id);
+    setShowDeleteModal(false);
+  };
 
   return (
     <div className="w-full rounded-xl overflow-hidden shadow-md bg-white">
@@ -83,7 +111,7 @@ function FoodCard({
                 <button
                   type="button"
                   className="w-full text-left px-3 py-2 text-sm hover:bg-gray-50 flex items-center gap-2 text-red-600"
-                  onClick={() => setShowMenu(false)}
+                  onClick={() => handleDelete(id as string)}
                 >
                   {/* Trash icon */}
                   <FontAwesomeIcon icon={faTrash} />
@@ -105,6 +133,12 @@ function FoodCard({
           {status === "open" ? "Open" : "Closed"}
         </span>
       </div>
+
+      <DeleteModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={() => confirmDelete(id as string)}
+      />
     </div>
   );
 }
