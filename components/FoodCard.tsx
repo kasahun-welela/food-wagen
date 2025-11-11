@@ -1,20 +1,26 @@
-'use client'
+"use client";
 
-import { useState } from "react"
-import Image from "next/image"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faEdit, faEllipsisVertical, faStar, faTag, faTrash } from "@fortawesome/free-solid-svg-icons"
-import { FoodCardProps } from "@/lib/types"
+import { useState } from "react";
+import Image from "next/image";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faEdit,
+  faEllipsisVertical,
+  faStar,
+  faTag,
+  faTrash,
+} from "@fortawesome/free-solid-svg-icons";
+import { FoodCardProps } from "@/lib/types";
 
 function FoodCard({
-  imageUrl ,
+  imageUrl,
   price,
   name,
   rating,
-  status ,
+  status,
   logo,
 }: FoodCardProps) {
-  const [showMenu, setShowMenu] = useState(false)
+  const [showMenu, setShowMenu] = useState(false);
 
   return (
     <div className="w-full rounded-xl overflow-hidden shadow-md bg-white">
@@ -28,7 +34,7 @@ function FoodCard({
           priority={false}
         />
         <span className="absolute top-3 left-3 rounded-full px-3 py-1 text-sm font-semibold text-white bg-[linear-gradient(97.86deg,#FFBA26_-8.95%,#FF9A0E_109.24%)] shadow flex items-center gap-1">
-          <FontAwesomeIcon icon={faTag} /> {price}
+          <FontAwesomeIcon icon={faTag} /> ${price}
         </span>
       </div>
 
@@ -44,9 +50,11 @@ function FoodCard({
               className="rounded"
             />
             <div>
-              <h3 className="font-semibold text-gray-900 line-clamp-1">{name}</h3>
+              <h3 className="font-semibold text-gray-900 line-clamp-1">
+                {name}
+              </h3>
               <div className="flex items-center gap-1 text-sm text-amber-500">
-              <FontAwesomeIcon icon={faStar} />
+                <FontAwesomeIcon icon={faStar} />
                 <span className="text-gray-700">{rating}</span>
               </div>
             </div>
@@ -59,7 +67,7 @@ function FoodCard({
               onClick={() => setShowMenu((v) => !v)}
               className="p-2 rounded-md hover:bg-gray-100 text-gray-600"
             >
-                <FontAwesomeIcon icon={faEllipsisVertical} />
+              <FontAwesomeIcon icon={faEllipsisVertical} />
             </button>
 
             {showMenu && (
@@ -69,9 +77,8 @@ function FoodCard({
                   className="w-full text-left px-3 py-2 text-sm hover:bg-gray-50 flex items-center gap-2 text-gray-700"
                   onClick={() => setShowMenu(false)}
                 >
-                
-                            <FontAwesomeIcon icon={faEdit} />
-                    Edit
+                  <FontAwesomeIcon icon={faEdit} />
+                  Edit
                 </button>
                 <button
                   type="button"
@@ -79,7 +86,7 @@ function FoodCard({
                   onClick={() => setShowMenu(false)}
                 >
                   {/* Trash icon */}
-                  <FontAwesomeIcon icon={faTrash} />    
+                  <FontAwesomeIcon icon={faTrash} />
                   Delete
                 </button>
               </div>
@@ -99,7 +106,7 @@ function FoodCard({
         </span>
       </div>
     </div>
-  )
+  );
 }
 
-export default FoodCard
+export default FoodCard;
