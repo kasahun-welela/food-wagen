@@ -51,3 +51,7 @@ export interface Restaurant {
     onClose: () => void;
     foodId: string | null;
   }
+
+  export interface HeroSectionProps {
+    onSearch: (term: string) => void; 
+  }

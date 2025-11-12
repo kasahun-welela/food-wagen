@@ -8,6 +8,8 @@ import HeroSection from "@/components/Hero";
 
 export default function Home() {
   const [mounted, setMounted] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+
   useEffect(() => setMounted(true), []);
   const {
     data: foods,
@@ -16,13 +18,13 @@ export default function Home() {
     isError,
     error,
   } = useQuery({
-    queryKey: ["foods"],
-    queryFn: () => getFoods(),
+    queryKey: ["foods", searchTerm],
+    queryFn: () => getFoods(searchTerm),
   });
 
   return (
     <>
-      <HeroSection />
+      <HeroSection onSearch={setSearchTerm} />
       <main className="container mx-auto px-6 py-12">
         {!mounted ? null : (
           <>

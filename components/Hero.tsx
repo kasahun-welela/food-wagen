@@ -8,9 +8,16 @@ import {
   faBagShopping,
   faSearch,
 } from "@fortawesome/free-solid-svg-icons";
+import { HeroSectionProps } from "@/lib/types";
 
-export default function HeroSection() {
+export default function HeroSection({ onSearch }: HeroSectionProps) {
   const [option, setOption] = useState("delivery");
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    onSearch(searchTerm);
+  };
 
   return (
     <section className="bg-orange-500 text-white  relative overflow-hidden">
@@ -51,29 +58,37 @@ export default function HeroSection() {
               </button>
             </div>
 
-            {/* Search input */}
-            <div className="flex flex-col md:flex-row gap-3 md:gap-4">
+            <form
+              onSubmit={handleSearch}
+              className="flex flex-col md:flex-row gap-3 md:gap-4"
+            >
               <div className="relative flex-1 min-w-[260px] md:min-w-[420px]">
-                {/* Email icon */}
+                {/* Search icon */}
                 <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400 pointer-events-none">
                   <FontAwesomeIcon
                     icon={faSearch}
                     className="text-orange-500"
                   />
                 </span>
+
                 <input
                   id="search"
                   type="text"
                   placeholder="What do you like to eat today?"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full text-sm bg-gray-100 rounded-lg border border-gray-300 pl-10 pr-3 py-2 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-orange-400"
                 />
               </div>
 
-              <button className="bg-orange-500 text-white px-6 py-2 rounded-lg font-semibold hover:bg-orange-600 transition">
+              <button
+                type="submit"
+                className="bg-orange-500 text-white px-6 py-2 rounded-lg font-semibold hover:bg-orange-600 transition"
+              >
                 <FontAwesomeIcon icon={faSearch} className="mr-2" />
                 Find Meal
               </button>
-            </div>
+            </form>
           </div>
         </div>
 
