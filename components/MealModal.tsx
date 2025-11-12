@@ -1,10 +1,14 @@
 "use client";
 
-import { MealModalProps } from "@/lib/types";
+import { CreateFood, MealModalProps } from "@/lib/types";
 import { useState } from "react";
 import { mealSchema } from "@/lib/ValidationSchema";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { createFood } from "@/lib/api";
 
 export default function MealModal({ isOpen, onClose }: MealModalProps) {
+  const queryClient = useQueryClient();
+
   if (!isOpen) return null;
 
   const [formData, setFormData] = useState({
@@ -14,6 +18,11 @@ export default function MealModal({ isOpen, onClose }: MealModalProps) {
     restaurant_name: "",
     restaurant_logo: "",
     restaurant_status: "Open Now",
+  });
+
+  const { mutateAsync, isPending } = useMutation({
+    mutationFn: (payload: CreateFood) => createFood(payload),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["foods"] }),
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -43,11 +52,10 @@ export default function MealModal({ isOpen, onClose }: MealModalProps) {
   ) => {
     const updated = { ...formData, [e.target.name]: e.target.value };
     setFormData(updated);
-    // Live validation as user types/selects
     validateAll(updated);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const parsedData = {
@@ -68,10 +76,11 @@ export default function MealModal({ isOpen, onClose }: MealModalProps) {
       setErrors(formattedErrors);
       return;
     }
-    setErrors({});
-    console.log("Validated Data:", result.data);
 
-    // reset form
+    setErrors({});
+    await mutateAsync(result.data);
+
+    // Reset form
     setFormData({
       food_name: "",
       food_rating: "",
@@ -80,6 +89,7 @@ export default function MealModal({ isOpen, onClose }: MealModalProps) {
       restaurant_logo: "",
       restaurant_status: "Open Now",
     });
+
     onClose();
   };
 
@@ -99,14 +109,10 @@ export default function MealModal({ isOpen, onClose }: MealModalProps) {
               onChange={handleChange}
               placeholder="Food name"
               className="food-input"
+              disabled={isPending}
             />
             {errors.food_name && (
-              <p
-                className="text-red-500 text-sm mt-1"
-                id="restaurant_name-error"
-              >
-                {errors.food_name}
-              </p>
+              <p className="text-red-500 text-sm mt-1">{errors.food_name}</p>
             )}
           </div>
 
@@ -119,14 +125,10 @@ export default function MealModal({ isOpen, onClose }: MealModalProps) {
               placeholder="Food rating (1-5)"
               type="number"
               className="food-input"
+              disabled={isPending}
             />
             {errors.food_rating && (
-              <p
-                className="text-red-500 text-sm mt-1"
-                id="restaurant_rating-error"
-              >
-                {errors.food_rating}
-              </p>
+              <p className="text-red-500 text-sm mt-1">{errors.food_rating}</p>
             )}
           </div>
 
@@ -138,14 +140,10 @@ export default function MealModal({ isOpen, onClose }: MealModalProps) {
               onChange={handleChange}
               placeholder="Food image (link)"
               className="food-input"
+              disabled={isPending}
             />
             {errors.food_image && (
-              <p
-                className="text-red-500 text-sm mt-1"
-                id="restaurant_image-error"
-              >
-                {errors.food_image}
-              </p>
+              <p className="text-red-500 text-sm mt-1">{errors.food_image}</p>
             )}
           </div>
 
@@ -157,12 +155,10 @@ export default function MealModal({ isOpen, onClose }: MealModalProps) {
               onChange={handleChange}
               placeholder="Restaurant name"
               className="food-input"
+              disabled={isPending}
             />
             {errors.restaurant_name && (
-              <p
-                className="text-red-500 text-sm mt-1"
-                id="restaurant_name-error"
-              >
+              <p className="text-red-500 text-sm mt-1">
                 {errors.restaurant_name}
               </p>
             )}
@@ -176,22 +172,22 @@ export default function MealModal({ isOpen, onClose }: MealModalProps) {
               onChange={handleChange}
               placeholder="Restaurant logo (link)"
               className="food-input"
+              disabled={isPending}
             />
             {errors.restaurant_logo && (
-              <p
-                className="text-red-500 text-sm mt-1"
-                id="restaurant_logo-error"
-              >
+              <p className="text-red-500 text-sm mt-1">
                 {errors.restaurant_logo}
               </p>
             )}
           </div>
 
+          {/* Status */}
           <select
             name="restaurant_status"
             value={formData.restaurant_status}
             onChange={handleChange}
             className="food-input"
+            disabled={isPending}
           >
             <option value="Open Now">Open Now</option>
             <option value="Closed">Closed</option>
@@ -206,14 +202,18 @@ export default function MealModal({ isOpen, onClose }: MealModalProps) {
           <div className="flex gap-3 pt-4">
             <button
               type="submit"
-              className="flex-1 bg-linear-to-r from-orange-400 to-orange-500 text-white font-semibold py-2 rounded-lg shadow hover:opacity-90 transition"
+              disabled={isPending}
+              className={`flex-1 bg-gradient-to-r from-orange-400 to-orange-500 text-white font-semibold py-2 rounded-lg shadow transition ${
+                isPending ? "opacity-70 cursor-not-allowed" : "hover:opacity-90"
+              }`}
             >
-              Add Food
+              {isPending ? "Adding food..." : "Add Food"}
             </button>
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 border border-orange-400 text-gray-700 font-semibold py-2 rounded-lg hover:bg-orange-50 transition"
+              disabled={isPending}
+              className="flex-1 border border-orange-400 text-gray-700 font-semibold py-2 rounded-lg hover:bg-orange-50 transition disabled:opacity-50"
             >
               Cancel
             </button>
