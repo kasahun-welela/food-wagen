@@ -11,9 +11,10 @@ import {
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import { FoodCardProps } from "@/lib/types";
-import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
+import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { deleteFood } from "@/lib/api";
 import DeleteModal from "./DeleteModal";
+import EditFoodModal from "./EditModal";
 
 function FoodCard({
   imageUrl,
@@ -27,22 +28,16 @@ function FoodCard({
   const [showMenu, setShowMenu] = useState(false);
   const queryClient = useQueryClient();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => deleteFood(id),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["foods"] }),
   });
 
-  // const handleDelete = async (id: string) => {
-  //   setShowMenu(false);
-  //   if (!confirm("Are you sure you want to delete this food?")) return;
-  //   await deleteMutation.mutateAsync(id);
-  // };
   const handleDelete = async (id: string) => {
     setShowMenu(false);
     setShowDeleteModal(true);
-
-    // The actual delete happens in the modal’s confirm button
   };
 
   const confirmDelete = async (id: string) => {
@@ -103,7 +98,10 @@ function FoodCard({
                 <button
                   type="button"
                   className="w-full text-left px-3 py-2 text-sm hover:bg-gray-50 flex items-center gap-2 text-gray-700"
-                  onClick={() => setShowMenu(false)}
+                  onClick={() => {
+                    setShowMenu(false);
+                    setShowEditModal(true);
+                  }}
                 >
                   <FontAwesomeIcon icon={faEdit} />
                   Edit
@@ -125,12 +123,12 @@ function FoodCard({
       <div className="px-4 pb-4 pt-3">
         <span
           className={`inline-block rounded-full px-3 py-1  font-bold ${
-            status === "open"
+            status === "Open Now"
               ? "bg-lime-100 text-lime-500"
               : "bg-orange-100 text-orange-500"
           }`}
         >
-          {status === "open" ? "Open" : "Closed"}
+          {status === "Open Now" ? "Open Now" : "Closed"}
         </span>
       </div>
 
@@ -138,6 +136,11 @@ function FoodCard({
         isOpen={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
         onConfirm={() => confirmDelete(id as string)}
+      />
+      <EditFoodModal
+        isOpen={showEditModal}
+        onClose={() => setShowEditModal(false)}
+        foodId={id as string}
       />
     </div>
   );
