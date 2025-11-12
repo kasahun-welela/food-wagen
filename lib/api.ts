@@ -15,20 +15,15 @@ export const deleteFood = async (id: string): Promise<void> => {
   };
 
   export const getFoodById = async (id: string) => {
-    const res = await fetch(`/api/Food/${id}`);
-    if (!res.ok) throw new Error("Failed to fetch food");
-    return res.json();
+    const res = await api.get(`/Food/${id}`);
+    return res.data
   };
   
   export const updateFood = async (id: string, data: any) => {
-    const res = await fetch(`/api/Food/${id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    });
-    if (!res.ok) throw new Error("Failed to update food");
-    return res.json();
+    const res = await api.put(`/Food/${id}`, data);
+    return res.data;
   };
+  
 
   export const createFood = async (food: CreateFood): Promise<Food> => {
     const res = await api.post('/Food', food);
